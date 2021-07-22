@@ -4,24 +4,15 @@ import './App.css';
 import {TableComponent} from "./Component/TableComponent";
 
 function App() {
-    const dataUrl = {
-        headerContent: [
-            "Column1",
-            "Column1",
-            "Column1",
-            "Column1",
-            "Column1",
-            "Column1",
-        ],
-        tableContent:[
+    const dataUrl=""
 
-        ]
-
-    }
 
     return (
-        <div className="App">
-            <TableComponent/>
+        <div className="App" >
+
+
+
+            <TableComponent dataUrl={dataUrl}/>
         </div>
     );
 }
