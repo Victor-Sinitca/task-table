@@ -1,10 +1,10 @@
 .table {
-    position: relative;
+    position:relative;
     border-collapse: collapse;
 }
 
 .row {
-    background-color: red;
+    /*background-color: red;*/
 }
 
 .cell {
@@ -12,12 +12,16 @@
     padding: 10px;
 
 }
-.header{
+/*.header{
     position: sticky;
     top:0;
     background-color: #7b61d5;
+}*/
+.header{
+    position:  relative;
+    top:0;
+    background-color: #7b61d5;
 }
-
 
 ::-webkit-scrollbar {
     width: 5px;

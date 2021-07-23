@@ -1,7 +1,6 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-import {TableComponent} from "./Component/TableComponent";
+import {TableContainer} from "./Component/TableContainer";
 
 function App() {
     const dataUrl=""
@@ -9,10 +8,10 @@ function App() {
 
     return (
         <div className="App" >
-
-
-
-            <TableComponent dataUrl={dataUrl}/>
+            <div style={{backgroundColor:"blue", height:500}}>
+                CCCC
+            </div>
+            <TableContainer dataUrl={dataUrl}/>
         </div>
     );
 }

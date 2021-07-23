@@ -1,0 +1,34 @@
+.tableFixedHead {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    height: 100vh;
+}
+
+.tableFixedHead th,
+.tableFixedHead td {
+    padding: 5px;
+    text-align: center;
+    width: 33.333vw;
+}
+
+.tableFixedHead thead {
+    background-color: #333;
+    color: #FDFDFD;
+}
+
+.tableFixedHead thead tr {
+    display: block;
+    position: relative;
+}
+
+.tableFixedHead tbody {
+    display: block;
+    overflow: auto;
+    width: 100%;
+    height: calc(100vh - 30px);
+}
+
+.tableFixedHead tbody tr:nth-child(even) {
+    background-color: #951f1f;
+}
