@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {FC} from 'react';
 import './App.css';
 import {TableContainer} from "./Component/TableContainer";
 
-function App() {
+function  App () {
     const dataUrl=""
 
 

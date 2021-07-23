@@ -196,6 +196,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
     const headerRow = data.dataHeader
     type KeysRowType = keyof typeof headerRow;
     type RowType = typeof headerRow;
+
     type TableRowPropsType = {
         r: RowType
         rowHeaderName: Array<KeysRowType>
@@ -245,6 +246,16 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
     </table>
 }
 
+function TableRow1<RowTypes extends Object>  (r:RowTypes, rowHeaderName:(Array<Extract<keyof RowTypes,string>>))  {
+    const tableCell = rowHeaderName.map((R) => r[R])
+    return <tr>
+        {tableCell}
+    </tr>
+})
+
+
+
+
 type TableHeaderPropsType = {
     r: {
         number: string,
@@ -259,6 +270,15 @@ const TableHeaderRow: FC<TableHeaderPropsType> = React.memo(  ({r}) => {
         {tableCell}
     </tr>
 })
+
+
+
+function getTableCell <T extends string> (value:T){
+    return <td>
+        {value}
+    </td>
+}
+
 
 
 type TableCellPropsType = {
