@@ -8,10 +8,9 @@ function App() {
 
     return (
         <div className="App" >
-            <div style={{backgroundColor:"blue", height:500}}>
-                CCCC
-            </div>
+            <div style={{height:100}}>vvv</div>
             <TableContainer dataUrl={dataUrl}/>
+            <div style={{height:500}}>  vvv</div>
         </div>
     );
 }

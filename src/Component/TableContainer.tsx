@@ -1,5 +1,5 @@
 import React, {FC} from "react";
-import s from "./TableComponent.module.css"
+import s from "./Table.module.css"
 import {TableComponent} from "./TableComponent";
 import dataJson from "../../data.json"
 
@@ -8,12 +8,9 @@ type TableContainerPropsType = {
 }
 export const TableContainer: FC<TableContainerPropsType> = ({dataUrl}) => {
 
-
-
-
-
-
-    return <TableComponent dataUrl={dataUrl}/>
+    return <div >
+        <TableComponent dataUrl={dataUrl}/>
+    </div>
 }
 
 

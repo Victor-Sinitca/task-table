@@ -1,34 +1,48 @@
+
+.copy{
+    position: sticky;
+    top:0px;
+    background-color: moccasin;
+}
+
 .tableFixedHead {
-    width: 100%;
-    table-layout: fixed;
+    position: relative;
     border-collapse: collapse;
-    height: 100vh;
 }
 
 .tableFixedHead th,
 .tableFixedHead td {
-    padding: 5px;
-    text-align: center;
-    width: 33.333vw;
+    padding: 10px;
+
 }
 
 .tableFixedHead thead {
-    background-color: #333;
-    color: #FDFDFD;
+/*    position: relative;
+    top:200px;
+    background-color: moccasin;*/
 }
 
 .tableFixedHead thead tr {
-    display: block;
-    position: relative;
+
 }
 
 .tableFixedHead tbody {
-    display: block;
-    overflow: auto;
-    width: 100%;
-    height: calc(100vh - 30px);
+
 }
 
 .tableFixedHead tbody tr:nth-child(even) {
-    background-color: #951f1f;
+    background-color: #e4e8d8;
+}
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }

@@ -1,12 +1,25 @@
-import React, {FC} from "react";
-import s from "./TableComponent.module.css"
+import React, {FC, useEffect, useRef, useState} from "react";
 import t from "./Table.module.css"
 
 type TableComponentPropsType = {
     dataUrl: string
 }
 export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
+    const headRef = useRef<HTMLTableSectionElement>(null)
+    const [top, setTop] = useState(0)
     const data = {
+        dataHeader: {
+            number: "Номер",
+            age: "Возраст",
+            name: "Имя",
+            city: "Город",
+            city2: "Город",
+            city3: "Город",
+            city4: "Город",
+            city5: "Город",
+            city6: "Город",
+            city7: "Город",
+        },
         dataTable: [
             {
                 number: "1",
@@ -57,7 +70,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "5",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -69,7 +82,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "6",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -81,7 +94,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "7",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -93,7 +106,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "8",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -105,7 +118,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "9",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -117,7 +130,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "10",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -129,7 +142,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "11",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -141,7 +154,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "12",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -153,7 +166,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "13",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -165,7 +178,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 city7: "Minsk",
             },
             {
-                number: "2",
+                number: "14",
                 name: "Dima222",
                 age: "244",
                 city: "Minsk22",
@@ -180,33 +193,56 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
 
         ]
     }
-
-    const headerRow = data.dataTable[0]
+    const headerRow = data.dataHeader
     type KeysRowType = keyof typeof headerRow;
     type RowType = typeof headerRow;
     type TableRowPropsType = {
         r: RowType
         rowHeaderName: Array<KeysRowType>
     }
-    const TableRow: FC<TableRowPropsType> = ({r, rowHeaderName}) => {
-        const tableCell = rowHeaderName.map((R) => <TableCell value={r[R]}/>)
-        return <tr className={s.row}>
+
+    const TableRow: FC<TableRowPropsType> = React.memo(  ({r, rowHeaderName}) => {
+        const tableCell = rowHeaderName.map((R) => <TableCell key={r[R][0]} value={r[R]}/>)
+        return <tr>
             {tableCell}
         </tr>
-    }
-    const rowHeaderName = Object.entries(headerRow).map((R) => R[0]) as Array<KeysRowType>
-    const tableRow = data.dataTable.map((r) => <TableRow r={r} rowHeaderName={rowHeaderName}/>)
+    })
 
-    return <div style={{overflow: "auto"}}>
-        <table className={t.tableFixedHead} cellPadding="0">
-            <thead>
-            <TableHeaderRow r={headerRow}/>
-            </thead>
-            <tbody>
-            {tableRow}
-            </tbody>
-        </table>
-    </div>
+    const rowHeaderName = Object.entries(headerRow).map((R) => R[0]) as Array<KeysRowType>
+
+
+    const tableRow = data.dataTable.map((r) => <TableRow key={r[rowHeaderName[0]]} r={r} rowHeaderName={rowHeaderName}/>)
+
+    const handleScroll = (event: Event) => {
+        const ref = headRef
+        // @ts-ignore
+        const target = event.currentTarget.scrollY
+        /*console.log(target)*/
+        if (ref.current &&
+            ref.current.parentElement
+            && ref.current.parentElement.offsetTop <target
+            && ref.current.parentElement.offsetTop + ref.current.parentElement.offsetHeight -ref.current.clientHeight > target) {
+            /*console.log(ref.current.parentElement.offsetTop)*/
+            setTop(target- ref.current.parentElement.offsetTop)
+        }
+    }
+
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll)
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        }
+    }, [])
+
+    return <table className={t.tableFixedHead} cellPadding="0">
+        <thead ref={headRef} style={{position: "relative", top: top, backgroundColor: "moccasin"}}>
+        <TableHeaderRow r={headerRow}/>
+        </thead>
+        <tbody>
+        {tableRow}
+        </tbody>
+    </table>
 }
 
 type TableHeaderPropsType = {
@@ -217,21 +253,21 @@ type TableHeaderPropsType = {
         city: string
     }
 }
-const TableHeaderRow: FC<TableHeaderPropsType> = ({r}) => {
-    const tableCell = Object.entries(r).map((R) => <TableCell value={R[0]}/>)
-    return <tr className={s.header}>
+const TableHeaderRow: FC<TableHeaderPropsType> = React.memo(  ({r}) => {
+    const tableCell = Object.entries(r).map((R) => <TableCell key={R[1]} value={R[1]}/>)
+    return <tr>
         {tableCell}
     </tr>
-}
+})
 
 
 type TableCellPropsType = {
     value: string
 }
-const TableCell: FC<TableCellPropsType> = ({value}) => {
-    return <td className={s.cell}>
+const TableCell: FC<TableCellPropsType> = React.memo( ({value}) => {
+    return <td>
         {value}
     </td>
-}
+})
 
 
