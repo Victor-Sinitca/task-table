@@ -11,9 +11,9 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
     // установка сдвига thead
     const [top, setTop] = useState(0)
     const data = {
-        // бьект используетется для настройки отображения таблицы:
-        // очередность вывода колонок соотвтетствует очередностим свойств
-        // количество свойств - количесво колонок
+        // объект используется для настройки отображения таблицы:
+        // очередность вывода колонок соответствует очередностим свойств
+        // количество свойств - количество колонок
         // значение свойств - название колонок
         dataHeader: {
             number: "Номер",
@@ -201,16 +201,20 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
 
         ]
     }
-    //добавления Id для маппинга
+    //добавления Id в массив данных получения key при маппинге
     const dataTableAddId = [...data.dataTable.map(m => ({...m, id: v1()}))]
-
-
+    //строка с названиями колонок
     const headerRow = data.dataHeader
+    //строка таблицы, для определения типа
     const row = dataTableAddId[0]
+    //тип для ключей
     type KeysRowType = keyof typeof headerRow;
+    //тип строк
     type RowType = typeof row;
 
+    // массив ключей для маппинга ячеек
     const rowHeaderName = Object.entries(headerRow).map((R) => R[0]) as Array<KeysRowType>
+    // строки таблицы
     const tableRow = dataTableAddId.map((row) => {
         const keyOfId = row["id"]
         return <tr key={keyOfId}>
@@ -218,13 +222,14 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
         </tr>
     })
 
-
+    //отслеживание скрола страницы
     const handleScroll = (event: Event) => {
         const ref = headRef
         if (event.currentTarget) {
             // @ts-ignore
             const target = event.currentTarget.scrollY
             debugger
+            // установка сдвига для заголовка
             if (ref.current &&
                 ref.current.parentElement
                 && ref.current.parentElement.offsetTop < target
@@ -232,14 +237,17 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
                 /*console.log(ref.current.parentElement.offsetTop)*/
                 setTop(target - ref.current.parentElement.offsetTop)
             } else {
+                //возвращение заголовка на место
                 setTop(0)
             }
         }
     }
     useEffect(() => {
+        //подписка на событи скролл
         const win: Window = window
         win.addEventListener('scroll', handleScroll)
         return () => {
+            //отписка от события скролл
             win.removeEventListener('scroll', handleScroll);
         }
     }, [])
@@ -247,7 +255,7 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
     return <table className={t.tableFixedHead} cellPadding="0">
         <thead ref={headRef} style={{position: "relative", top: top, backgroundColor: "moccasin"}}>
         <tr>
-            {getTableHeaderRow(headerRow, rowHeaderName, "id")}
+            {getTableRow(headerRow, rowHeaderName, "id")}
         </tr>
         </thead>
         <tbody>
@@ -255,7 +263,11 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
         </tbody>
     </table>
 }
-interface StringMap { [key: string]: string; }
+
+interface StringMap {
+    [key: string]: string;
+}
+//дженерик строки таблицы
 function getTableRow<RowTypes extends StringMap,
     HeaderNameTypes extends Extract<keyof RowTypes, string>>
 (r: RowTypes, rowHeaderName: Array<HeaderNameTypes>, keyOfId: string) {
@@ -269,21 +281,7 @@ function getTableRow<RowTypes extends StringMap,
         {tableCell}
     </>
 }
-
-function getTableHeaderRow<RowTypes extends StringMap ,
-    HeaderNameTypes extends Extract<keyof RowTypes, string>>
-(r: RowTypes, rowHeaderName: Array<HeaderNameTypes>, keyOfId: string) {
-    const tableCell = rowHeaderName.map((R) => {
-        const keyCell = keyOfId + R
-        return <td key={keyCell}>
-            {getTableCell(r[R])}
-        </td>
-    })
-    return <>
-        {tableCell}
-    </>
-}
-
+//дженерик ясейки таблицы
 function getTableCell(value: string) {
     return <>
         {value}
