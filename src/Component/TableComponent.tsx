@@ -1,13 +1,20 @@
 import React, {FC, useEffect, useRef, useState} from "react";
 import t from "./Table.module.css"
+import {v1} from "uuid"
 
 type TableComponentPropsType = {
     dataUrl: string
 }
 export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
+    //ссылка на элемент thead
     const headRef = useRef<HTMLTableSectionElement>(null)
+    // установка сдвига thead
     const [top, setTop] = useState(0)
     const data = {
+        // бьект используетется для настройки отображения таблицы:
+        // очередность вывода колонок соотвтетствует очередностим свойств
+        // количество свойств - количесво колонок
+        // значение свойств - название колонок
         dataHeader: {
             number: "Номер",
             age: "Возраст",
@@ -20,11 +27,12 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
             city6: "Город",
             city7: "Город",
         },
+        // массив для хранения данных таблицы
         dataTable: [
             {
                 number: "1",
                 name: "Dima111",
-                age: "28",
+                age: "1",
                 city: "Minsk",
                 city2: "Minsk",
                 city3: "Minsk",
@@ -193,101 +201,103 @@ export const TableComponent: FC<TableComponentPropsType> = ({dataUrl}) => {
 
         ]
     }
+    //добавления Id для маппинга
+    const dataTableAddId = [...data.dataTable.map(m => ({...m, id: v1()}))]
+
+
     const headerRow = data.dataHeader
+    const row = dataTableAddId[0]
     type KeysRowType = keyof typeof headerRow;
-    type RowType = typeof headerRow;
+    type RowType = typeof row;
 
-    type TableRowPropsType = {
-        r: RowType
-        rowHeaderName: Array<KeysRowType>
-    }
-
-    const TableRow: FC<TableRowPropsType> = React.memo(  ({r, rowHeaderName}) => {
-        const tableCell = rowHeaderName.map((R) => <TableCell key={r[R][0]} value={r[R]}/>)
-        return <tr>
-            {tableCell}
+    const rowHeaderName = Object.entries(headerRow).map((R) => R[0]) as Array<KeysRowType>
+    const tableRow = dataTableAddId.map((row) => {
+        const keyOfId = row["id"]
+        return <tr key={keyOfId}>
+            {getTableRow<RowType, KeysRowType>(row, rowHeaderName, keyOfId)}
         </tr>
     })
 
-    const rowHeaderName = Object.entries(headerRow).map((R) => R[0]) as Array<KeysRowType>
-
-
-    const tableRow = data.dataTable.map((r) => <TableRow key={r[rowHeaderName[0]]} r={r} rowHeaderName={rowHeaderName}/>)
 
     const handleScroll = (event: Event) => {
         const ref = headRef
-        // @ts-ignore
-        const target = event.currentTarget.scrollY
-        /*console.log(target)*/
-        if (ref.current &&
-            ref.current.parentElement
-            && ref.current.parentElement.offsetTop <target
-            && ref.current.parentElement.offsetTop + ref.current.parentElement.offsetHeight -ref.current.clientHeight > target) {
-            /*console.log(ref.current.parentElement.offsetTop)*/
-            setTop(target- ref.current.parentElement.offsetTop)
+        if (event.currentTarget) {
+            // @ts-ignore
+            const target = event.currentTarget.scrollY
+            debugger
+            if (ref.current &&
+                ref.current.parentElement
+                && ref.current.parentElement.offsetTop < target
+                && ref.current.parentElement.offsetTop + ref.current.parentElement.offsetHeight - ref.current.clientHeight > target) {
+                /*console.log(ref.current.parentElement.offsetTop)*/
+                setTop(target - ref.current.parentElement.offsetTop)
+            } else {
+                setTop(0)
+            }
         }
     }
-
-
     useEffect(() => {
-        window.addEventListener('scroll', handleScroll)
+        const win: Window = window
+        win.addEventListener('scroll', handleScroll)
         return () => {
-            window.removeEventListener('scroll', handleScroll);
+            win.removeEventListener('scroll', handleScroll);
         }
     }, [])
 
     return <table className={t.tableFixedHead} cellPadding="0">
         <thead ref={headRef} style={{position: "relative", top: top, backgroundColor: "moccasin"}}>
-        <TableHeaderRow r={headerRow}/>
+        <tr>
+            {getTableHeaderRow(headerRow, rowHeaderName, "id")}
+        </tr>
         </thead>
         <tbody>
         {tableRow}
         </tbody>
     </table>
 }
-
-function TableRow1<RowTypes extends Object>  (r:RowTypes, rowHeaderName:(Array<Extract<keyof RowTypes,string>>))  {
-    const tableCell = rowHeaderName.map((R) => r[R])
-    return <tr>
+interface StringMap { [key: string]: string; }
+function getTableRow<RowTypes extends StringMap,
+    HeaderNameTypes extends Extract<keyof RowTypes, string>>
+(r: RowTypes, rowHeaderName: Array<HeaderNameTypes>, keyOfId: string) {
+    const tableCell = rowHeaderName.map((R) => {
+        const keyCell = keyOfId + R
+        return <td key={keyCell}>
+            {getTableCell(r[R])}
+        </td>
+    })
+    return <>
         {tableCell}
-    </tr>
-})
-
-
-
-
-type TableHeaderPropsType = {
-    r: {
-        number: string,
-        name: string,
-        age: string,
-        city: string
-    }
+    </>
 }
-const TableHeaderRow: FC<TableHeaderPropsType> = React.memo(  ({r}) => {
-    const tableCell = Object.entries(r).map((R) => <TableCell key={R[1]} value={R[1]}/>)
-    return <tr>
+
+function getTableHeaderRow<RowTypes extends StringMap ,
+    HeaderNameTypes extends Extract<keyof RowTypes, string>>
+(r: RowTypes, rowHeaderName: Array<HeaderNameTypes>, keyOfId: string) {
+    const tableCell = rowHeaderName.map((R) => {
+        const keyCell = keyOfId + R
+        return <td key={keyCell}>
+            {getTableCell(r[R])}
+        </td>
+    })
+    return <>
         {tableCell}
-    </tr>
-})
+    </>
+}
 
-
-
-function getTableCell <T extends string> (value:T){
-    return <td>
+function getTableCell(value: string) {
+    return <>
         {value}
-    </td>
+    </>
 }
 
 
 
-type TableCellPropsType = {
-    value: string
-}
-const TableCell: FC<TableCellPropsType> = React.memo( ({value}) => {
-    return <td>
-        {value}
-    </td>
-})
+
+
+
+
+
+
+
 
 
