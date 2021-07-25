@@ -1,16 +1,17 @@
-import React, {FC} from 'react';
+import React from 'react';
 import './App.css';
 import {TableContainer} from "./Component/TableContainer";
 
-function  App () {
-    const dataUrl=""
 
-
+function App() {
     return (
-        <div className="App" >
-            <div style={{height:100}}>vvv</div>
-            <TableContainer dataUrl={dataUrl}/>
-            <div style={{height:500}}>  vvv</div>
+        <div className="App">
+            <div style={{height: 100, backgroundColor:"#22222222"}}> </div>
+            <TableContainer/>
+            <TableContainer/>
+            <TableContainer/>
+            <TableContainer/>
+            <div style={{height: 700,backgroundColor:"#22222222"}}> </div>
         </div>
     );
 }

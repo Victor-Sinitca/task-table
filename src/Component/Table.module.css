@@ -1,48 +1,29 @@
-
-.copy{
-    position: sticky;
-    top:0px;
-    background-color: moccasin;
+.container {
+    margin-bottom: 50px;
+    overflow: auto;
 }
-
 .tableFixedHead {
     position: relative;
     border-collapse: collapse;
 }
-
 .tableFixedHead th,
 .tableFixedHead td {
     padding: 10px;
-
 }
-
-.tableFixedHead thead {
-/*    position: relative;
-    top:200px;
-    background-color: moccasin;*/
-}
-
-.tableFixedHead thead tr {
-
-}
-
-.tableFixedHead tbody {
-
-}
-
 .tableFixedHead tbody tr:nth-child(even) {
     background-color: #e4e8d8;
 }
+
 ::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+    width: 10px;
+    height: 10px;
 }
 ::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #b42323;
 }
 ::-webkit-scrollbar-thumb {
-    background: #888;
+    background: #1a4484;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #44aa1f;
 }
