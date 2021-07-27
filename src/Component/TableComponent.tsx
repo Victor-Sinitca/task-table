@@ -8,9 +8,18 @@ type TableComponentPropsType = {
     dataTable: Array<StringCell>
     dataHeader?: StringCell | null
 }
+
+
+
 export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTable, dataHeader}) => {
+
+
+
+
+
     //ссылка на главную таблицу
     const refOnTable = useRef<HTMLDivElement>(null)
+    const ref22 = useRef<HTMLDivElement>(null)
     // стили для установки сдвига
     const [styleData, setStyleData]=useState({
         top:0,
@@ -20,7 +29,8 @@ export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTabl
     //отслеживание скрола страницы
     const handleScroll = (event: Event) => {
         const ref = refOnTable
-        if (event.currentTarget  && ref.current  && ref.current.firstChild  &&  ref.current.firstChild.firstChild ) {
+        const ref2 = ref22
+        if (event.currentTarget) {
             // @ts-ignore
             const target = event.currentTarget.scrollY
             // установка сдвига для заголовка
@@ -29,11 +39,14 @@ export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTabl
                 && ref.current.parentElement.offsetTop < target
                 && ref.current.parentElement.offsetTop + ref.current.parentElement.offsetHeight
                 - ref.current.parentElement.offsetHeight / dataTable.length *1.2  > target) {
+                debugger
                 setStyleData({
                     visibility: "initial",
                     top: target - ref.current.parentElement.offsetTop
                 })
             } else  {
+                debugger
+
                 //удаление заголовка
                 setStyleData({
                     visibility: "collapse",
@@ -57,7 +70,7 @@ export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTabl
         <div ref={refOnTable}>
             <Table dataTable={dataTable} dataHeader={dataHeader}/>
         </div>
-        <div  style={{position: "absolute", top: styleData.top, visibility: styleData.visibility}}>
+        <div  ref={ref22} style={{position: "absolute", top: styleData.top, visibility: styleData.visibility}}>
             <TableForHeader dataTable={dataTable} dataHeader={dataHeader}/>
         </div>
     </div>
