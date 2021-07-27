@@ -1,22 +1,25 @@
 import React, {FC, useEffect, useState} from "react";
-import {StringCell, TableComponent} from "./TableComponent";
+import {TableComponent} from "./TableComponent";
 import {AddDataUrlForm} from "./AddDataUrlForm";
 import s from "./Table.module.css"
 
-
+export interface StringCell {
+    [key: string]: string;
+}
 export const TableContainer: FC = React.memo( () => {
     const [dataUrl, setDataUrl] = useState("")
     // данные для таблицы
     const [data, setData] = useState<Array<StringCell> | null>(null)
     //данные для настройки заглавия таблицы
+    type dataType= typeof data
     const [dataHeader, setDataHeader] = useState<StringCell | null>(null)
     // объект используется для настройки отображения таблицы:
     // очередность вывода колонок соответствует очередности свойств
     // количество свойств - количество колонок
     // значение свойств - название колонок
     const dataHeaderRow= {
-        number: "Номер",
         age: "Возраст",
+        number: "Номер",
         name: "Имя",
         city: "Город",
         city2: "Город",

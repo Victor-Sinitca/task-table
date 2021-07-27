@@ -1,27 +1,75 @@
-import React, {FC, useEffect, useRef, useState, memo, SyntheticEvent} from "react";
+import React, {FC, useEffect, useRef, useState,} from "react";
 import s from "./Table.module.css"
 import {v1} from "uuid"
+import {StringCell} from "./TableContainer";
 
-declare module "react" { // augment React types
-    function memo<A, B>(Component: (props: A) => B): (props: A) => ReactElement | null
-
-    // return type is same as ReturnType<ExoticComponent<any>>
-}
-
-
-export interface StringCell {
-    [key: string]: string;
-}
 
 type TableComponentPropsType = {
     dataTable: Array<StringCell>
     dataHeader?: StringCell | null
 }
 export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTable, dataHeader}) => {
-    //ссылка на элемент thead
-    const headRef = useRef<HTMLTableSectionElement>(null)
-    // установка сдвига thead
-    const [top, setTop] = useState(0)
+    //ссылка на главную таблицу
+    const refOnTable = useRef<HTMLDivElement>(null)
+    // стили для установки сдвига
+    const [styleData, setStyleData]=useState({
+        top:0,
+        visibility:"collapse" as "collapse" | "initial"
+    })
+
+    //отслеживание скрола страницы
+    const handleScroll = (event: Event) => {
+        const ref = refOnTable
+        if (event.currentTarget  && ref.current  && ref.current.firstChild  &&  ref.current.firstChild.firstChild ) {
+            // @ts-ignore
+            const target = event.currentTarget.scrollY
+            // установка сдвига для заголовка
+            if (ref.current
+                && ref.current.parentElement
+                && ref.current.parentElement.offsetTop < target
+                && ref.current.parentElement.offsetTop + ref.current.parentElement.offsetHeight
+                - ref.current.parentElement.offsetHeight / dataTable.length *1.2  > target) {
+                setStyleData({
+                    visibility: "initial",
+                    top: target - ref.current.parentElement.offsetTop
+                })
+            } else  {
+                //удаление заголовка
+                setStyleData({
+                    visibility: "collapse",
+                    top: 0
+                })
+            }
+        }
+    }
+    useEffect(() => {
+        //подписка на событи скролл
+        const win: Window = window
+        win.addEventListener('scroll', handleScroll)
+        return () => {
+            //отписка от события скролл
+            win.removeEventListener('scroll', handleScroll);
+        }
+    }, [])
+
+
+    return <div style={{position: "relative"}}>
+        <div ref={refOnTable}>
+            <Table dataTable={dataTable} dataHeader={dataHeader}/>
+        </div>
+        <div  style={{position: "absolute", top: styleData.top, visibility: styleData.visibility}}>
+            <TableForHeader dataTable={dataTable} dataHeader={dataHeader}/>
+        </div>
+    </div>
+
+})
+
+type TableType = {
+    dataTable: Array<StringCell>
+    dataHeader?: StringCell | null
+}
+
+const Table: FC<TableType> = React.memo(({dataTable, dataHeader}) => {
     // определение объекта для извлечения ключей для таблицы
     const headerRow = dataHeader || dataTable[0] as StringCell
     //добавления Id в массив данных получения key при маппинге
@@ -37,49 +85,14 @@ export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTabl
     // строки таблицы
     const tableRow = dataTableAddId.map((row) => {
         const keyOfId = row["id"]
-        return <MemoTableRow key={keyOfId} r={row} rowHeaderName={rowHeaderName} keyOfId={keyOfId}/>
-        /*return <tr key={keyOfId}>
-            {getTableRow<RowType, KeysRowType>(row, rowHeaderName, keyOfId)}
-        </tr>*/
+        return <TableRow key={keyOfId} r={row} rowHeaderName={rowHeaderName} keyOfId={keyOfId}/>
     })
-    //отслеживание скрола страницы
-    const handleScroll = (event: Event ) => {
-        const ref = headRef
-        if (event.currentTarget) {
-            // @ts-ignore
-            const target = event.currentTarget.scrollY
-            // установка сдвига для заголовка
-            if (ref.current &&
-                ref.current.parentElement
-                && ref.current.parentElement.offsetTop < target
-                && ref.current.parentElement.offsetTop + ref.current.parentElement.offsetHeight - ref.current.clientHeight > target) {
-                /*console.log(ref.current.parentElement.offsetTop)*/
-                setTop(target - ref.current.parentElement.offsetTop)
-            } else if (ref.current &&
-                ref.current.parentElement
-                && ref.current.parentElement.offsetTop > target) {
-                //возвращение заголовка на место
-                setTop(0)
-            }
-        }
-    }
-    useEffect(() => {
-        //подписка на событи скролл
-        const win: Window = window
-        win.addEventListener('scroll', handleScroll)
-        return () => {
-            //отписка от события скролл
-            win.removeEventListener('scroll', handleScroll);
-        }
-    }, [])
-
-
 
     return <table className={s.tableFixedHead} cellPadding="0">
-        <thead ref={headRef} style={{position: "relative", top: top, backgroundColor: "moccasin"}}>
+        <thead style={{backgroundColor: "moccasin"}}>
         {
-            dataHeader ? <MemoTableRow r={headerRow} rowHeaderName={rowHeaderName} keyOfId={"id"}/>
-                : <MemoTableHeaderRow r={headerRow} rowHeaderName={rowHeaderName} keyOfId={"id"}/>
+            dataHeader ? <TableRow r={headerRow} rowHeaderName={rowHeaderName} keyOfId={"id"}/>
+                : <TableHeaderRow r={headerRow} rowHeaderName={rowHeaderName} keyOfId={"id"}/>
         }
         </thead>
         <tbody>
@@ -87,24 +100,46 @@ export const TableComponent: FC<TableComponentPropsType> = React.memo(({dataTabl
         </tbody>
     </table>
 })
+const TableForHeader: FC<TableType> = React.memo(({dataTable, dataHeader}) => {
+    // определение объекта для извлечения ключей для таблицы
+    const headerRow = dataHeader || dataTable[0] as StringCell
+    //добавления Id в массив данных получения key при маппинге
+    const dataTableAddId = [...dataTable.map(m => ({...m, id: v1()}))] as Array<StringCell>
+    //тип для ключей
+    type KeysRowType = Extract<keyof typeof headerRow, string>;
+    //тип строк
+    type RowType = typeof dataTableAddId[0];
+    //тип строки заглавия
+    type headerRowType = typeof headerRow
+    // массив ключей для маппинга ячеек
+    const rowHeaderName = Object.entries(headerRow).map((R) => R[0]) as Array<KeysRowType>
+    // строки таблицы
+    const tableRow = dataTableAddId.map((row) => {
+        const keyOfId = row["id"]
+        return <TableRow key={keyOfId} r={row} rowHeaderName={rowHeaderName} keyOfId={keyOfId}/>
+    })
 
 
-interface Props<T> {
-    a: T
+    return <table className={s.tableFixedHead} cellPadding="0">
+        <thead style={{backgroundColor: "moccasin"}}>
+        {
+            dataHeader ? <TableRow r={headerRow} rowHeaderName={rowHeaderName} keyOfId={"id"}/>
+                : <TableHeaderRow r={headerRow} rowHeaderName={rowHeaderName} keyOfId={"id"}/>
+        }
+        </thead>
+        <tbody style={{visibility: "collapse"}}>
+        {tableRow}
+        </tbody>
+    </table>
+})
+
+
+type PropsTableRowType = {
+    r: StringCell,
+    rowHeaderName: Array<string>,
+    keyOfId: string,
 }
-
-const TableWrapped = <T extends {}>(props: Props<T>) => <div>{props.a}</div>
-const Table = memo(TableWrapped)
-
-
-interface PropsTableRow<RowTypes, HeaderNameTypes> {
-    r: RowTypes,
-    rowHeaderName: Array<HeaderNameTypes>,
-    keyOfId: string
-}
-
-const TableRow = <RowTypes extends StringCell, HeaderNameTypes extends Extract<keyof RowTypes, string>>
-({r, rowHeaderName, keyOfId}: PropsTableRow<RowTypes, HeaderNameTypes>) => {
+const TableRow: FC<PropsTableRowType> = React.memo(({r, rowHeaderName, keyOfId}) => {
     const tableCell = rowHeaderName.map((R) => {
         const keyCell = R + keyOfId
         return <TableCell key={keyCell} value={r[R]}/>
@@ -112,12 +147,8 @@ const TableRow = <RowTypes extends StringCell, HeaderNameTypes extends Extract<k
     return <tr>
         {tableCell}
     </tr>
-}
-const MemoTableRow = memo(TableRow)
-
-
-const TableHeaderRow = <RowTypes extends StringCell, HeaderNameTypes extends Extract<keyof RowTypes, string>>
-({r, rowHeaderName, keyOfId}: PropsTableRow<RowTypes, HeaderNameTypes>) => {
+})
+const TableHeaderRow: FC<PropsTableRowType> = React.memo(({r, rowHeaderName, keyOfId}) => {
     const tableCell = rowHeaderName.map((R) => {
         const keyCell = R + keyOfId
         return <TableCell key={keyCell} value={R}/>
@@ -125,10 +156,7 @@ const TableHeaderRow = <RowTypes extends StringCell, HeaderNameTypes extends Ext
     return <tr>
         {tableCell}
     </tr>
-}
-const MemoTableHeaderRow = memo(TableHeaderRow)
-
-
+})
 const TableCell: FC<{ value: string }> = React.memo(({value}) => {
     return <td>
         {value}
