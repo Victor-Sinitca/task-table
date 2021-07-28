@@ -207,6 +207,7 @@ export const TableContainer: FC = React.memo(() => {
     const handleAddDataUrl = (data: string) => {
         setDataUrl(data)
     }
+
     useEffect(() => {
         async function getData(url: string) {
             try {
@@ -219,14 +220,13 @@ export const TableContainer: FC = React.memo(() => {
                         name:d[0]
                     }
                 }))
-                console.log(`загрузка удалась ${data}`)
+                /*console.log(`загрузка удалась ${data}`)*/
             } catch (e) {
-                console.log(e)
+                /*console.log(e)*/
                 setData(dataTable)
                 setDataHeader(null)
             }
         }
-
         if (dataUrl) {
             getData(dataUrl)
         } else {

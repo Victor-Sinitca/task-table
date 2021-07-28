@@ -1,8 +1,7 @@
 import React, {FC, useEffect, useRef, useState,} from "react";
 import s from "./Table.module.css"
-import {v1} from "uuid"
 import {HeaderObjectType, TableRowType} from "./TableContainer";
-
+import {v1} from "uuid"
 
 type TableComponentPropsType = {
     dataTable: Array<TableRowType>
@@ -126,6 +125,7 @@ const TableRow: FC<PropsTableRowType> = React.memo(({r, rowHeaderName, keyOfId})
 })
 
 const TableCell: FC<{ value: string }> = React.memo(({value}) => {
+    /*console.log("TableCell")*/
     return <td>
         {value}
     </td>
