@@ -29,6 +29,19 @@ export const TableContainer: FC = React.memo( () => {
         city6: "Город",
         city7: "Город",
     }
+    const dataHeaderRow1= [
+        {age: "Возраст"},
+        {number: "Номер"},
+        {name: "Имя"},
+        {city: "Город"},
+        {city2: "Город"},
+        {city3: "Город"},
+        {city4: "Город"},
+        {city5: "Город"},
+        {city6: "Город"},
+        {city7: "Город"},
+    ]
+
     // массив для хранения данных таблицы
     const dataTable= [
         {
