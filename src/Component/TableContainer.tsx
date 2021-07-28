@@ -3,47 +3,37 @@ import {TableComponent} from "./TableComponent";
 import {AddDataUrlForm} from "./AddDataUrlForm";
 import s from "./Table.module.css"
 
-export interface StringCell {
+export interface TableRowType {
     [key: string]: string;
 }
-export const TableContainer: FC = React.memo( () => {
+export type HeaderObjectType={
+    key:string,
+    name:string
+}
+export const TableContainer: FC = React.memo(() => {
     const [dataUrl, setDataUrl] = useState("")
     // данные для таблицы
-    const [data, setData] = useState<Array<StringCell> | null>(null)
+    const [data, setData] = useState<Array<TableRowType> | null>(null)
     //данные для настройки заглавия таблицы
-    type dataType= typeof data
-    const [dataHeader, setDataHeader] = useState<StringCell | null>(null)
-    // объект используется для настройки отображения таблицы:
-    // очередность вывода колонок соответствует очередности свойств
-    // количество свойств - количество колонок
-    // значение свойств - название колонок
-    const dataHeaderRow= {
-        age: "Возраст",
-        number: "Номер",
-        name: "Имя",
-        city: "Город",
-        city2: "Город",
-        city3: "Город",
-        city4: "Город",
-        city5: "Город",
-        city6: "Город",
-        city7: "Город",
-    }
-    const dataHeaderRow1= [
-        {age: "Возраст"},
-        {number: "Номер"},
-        {name: "Имя"},
-        {city: "Город"},
-        {city2: "Город"},
-        {city3: "Город"},
-        {city4: "Город"},
-        {city5: "Город"},
-        {city6: "Город"},
-        {city7: "Город"},
+    const [dataHeader, setDataHeader] = useState<Array<HeaderObjectType> | null>(null)
+    // массив используется для настройки отображения таблицы:
+    // очередность соответствует очередности элементов массива
+    // количество элементов - количество колонок
+    // значение элементов - название колонок и ключей
+    const dataHeaderRow = [
+        {key: "number", name: "Номер"},
+        {key: "age", name: "Возраст"},
+        {key: "name", name: "Имя"},
+        {key: "city", name: "Город"},
+        {key: "city2", name: "Город"},
+        {key: "city3", name: "Город"},
+        {key: "city4", name: "Город"},
+        {key: "city5", name: "Город"},
+        {key: "city6", name: "Город"},
+        {key: "city7", name: "Город"},
     ]
-
     // массив для хранения данных таблицы
-    const dataTable= [
+    const dataTable = [
         {
             number: "1",
             name: "Dima111",
@@ -213,37 +203,44 @@ export const TableContainer: FC = React.memo( () => {
             city7: "Minsk",
         },
     ]
-    const handleAddDataUrl = (data:string) => {
+
+    const handleAddDataUrl = (data: string) => {
         setDataUrl(data)
     }
     useEffect(() => {
         async function getData(url: string) {
-            try{
+            try {
                 const res = await fetch(url)
-                const data = await res.json() as Array<StringCell>
+                const data = await res.json() as Array<TableRowType>
                 setData(data)
-                setDataHeader(data[0])
+                setDataHeader(Object.entries(data[0]).map((d) => {
+                    return {
+                        key:d[0],
+                        name:d[0]
+                    }
+                }))
                 console.log(`загрузка удалась ${data}`)
-            }catch (e) {
-               console.log(e)
+            } catch (e) {
+                console.log(e)
                 setData(dataTable)
                 setDataHeader(null)
             }
         }
+
         if (dataUrl) {
-           getData(dataUrl)
-        }else{
+            getData(dataUrl)
+        } else {
             setData(dataTable)
             setDataHeader(dataHeaderRow)
         }
     }, [dataUrl])
-    if(!data){
-        return <div> </div>
+    if (!data) {
+        return <div></div>
     }
     return <div className={s.container}>
         {dataUrl && <div>dataUrl:{dataUrl}</div>}
         <AddDataUrlForm onSubmit={handleAddDataUrl}/>
-        <TableComponent dataTable={data}  dataHeader={dataHeader} />
+        <TableComponent dataTable={data} dataHeader={dataHeader}/>
     </div>
 })
 
