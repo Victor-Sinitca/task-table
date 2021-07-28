@@ -211,9 +211,9 @@ export const TableContainer: FC = React.memo(() => {
         async function getData(url: string) {
             try {
                 const res = await fetch(url)
-                const data = await res.json() as Array<TableRowType>
-                setData(data)
-                setDataHeader(Object.entries(data[0]).map((d) => {
+                const data = await res.json() as {dataTable:Array<TableRowType>}
+                setData(data.dataTable)
+                setDataHeader(Object.entries(data.dataTable[0]).map((d) => {
                     return {
                         key:d[0],
                         name:d[0]
